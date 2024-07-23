@@ -8,9 +8,6 @@ public class Destroyer : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent<Enemy>(out Enemy enemy))
-            if (EnemyDestroyed != null)
-                EnemyDestroyed.Invoke(enemy);
-            else
-                Destroy(enemy);
+                EnemyDestroyed?.Invoke(enemy);
     }
 }

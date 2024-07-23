@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -18,7 +19,7 @@ public class Spawner : MonoBehaviour
     {
         _pool = new ObjectPool<Enemy>(
             createFunc: () => Instantiate(_prefabEnemy),
-            actionOnGet: (obj) => ActionOnGet(obj),
+            actionOnGet: (obj) => ActivateEnemy(obj),
             actionOnRelease: (obj) => obj.gameObject.SetActive(false),
             actionOnDestroy: (obj) => Destroy(obj),
             collectionCheck: true,
@@ -33,7 +34,7 @@ public class Spawner : MonoBehaviour
         _destroyer.EnemyDestroyed -= Release;
 
     private void Start() =>
-        InvokeRepeating(nameof(GetEnemy), 0f, _delay);
+        StartCoroutine(Spawn());
 
     private void GetEnemy() =>
         _pool.Get();
@@ -41,7 +42,7 @@ public class Spawner : MonoBehaviour
     private void Release(Enemy enemy) =>
         _pool.Release(enemy);
 
-    private void ActionOnGet(Enemy enemy)
+    private void ActivateEnemy(Enemy enemy)
     {
         Vector3 direction = Random.onUnitSphere;
         direction.y = 0;
@@ -58,5 +59,14 @@ public class Spawner : MonoBehaviour
         Transform point = _spawnPoints[Random.Range(0, _spawnPoints.Count)];
 
         return point.position;
+    }
+
+    private IEnumerator Spawn()
+    {
+        while (enabled)
+        {
+            GetEnemy();
+            yield return new WaitForSeconds(_delay);
+        }
     }
 }
