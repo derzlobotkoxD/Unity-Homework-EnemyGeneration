@@ -63,10 +63,12 @@ public class Spawner : MonoBehaviour
 
     private IEnumerator Spawn()
     {
+        var wait = new WaitForSeconds(_delay);
+
         while (enabled)
         {
             GetEnemy();
-            yield return new WaitForSeconds(_delay);
+            yield return wait;
         }
     }
 }
